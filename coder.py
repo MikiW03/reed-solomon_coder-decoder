@@ -1,3 +1,4 @@
+from alpha import Alpha
 from polynomials.alpha_poly import AlphaPoly
 from global_settings import Global
 
@@ -23,7 +24,7 @@ def bit_list_to_text(bit_list):
 
 def split_list(tab, M):
     if M <= 0:
-        raise ValueError("Długość fragmentu musi być większa od zera.")
+        raise ValueError("Length has to be greater than 0")
 
     result = [tab[i:i + M] for i in range(0, len(tab), M)]
 
@@ -31,13 +32,6 @@ def split_list(tab, M):
         result[-1].extend([0] * (M - len(result[-1])))
 
     return result
-
-
-def int_to_polynomial(n):
-    poly = [0] * (n + 1)
-    poly[0] = 1
-
-    return AlphaPoly(poly)
 
 
 def binary_lists_to_decimal_list(binary_lists):
@@ -49,6 +43,16 @@ def binary_lists_to_decimal_list(binary_lists):
         decimal_list.append(decimal_value)
 
     return AlphaPoly(decimal_list)
+
+
+def split_poly(poly, size_of_parts):
+    fill_value = None
+    lst = poly.coefficients
+
+    result = [AlphaPoly(lst[i:i + size_of_parts]) for i in range(0, len(lst), size_of_parts)]
+    if len(result[-1]) < size_of_parts:
+        result[-1] *= AlphaPoly([1] + [fill_value] * (size_of_parts - len(result[-1])))
+    return result
 
 
 class Coder:
@@ -63,24 +67,25 @@ class Coder:
         n = 2 ** self.M - 1
         k = n - 2 * self.T
 
-        xnk = int_to_polynomial(n - k)
         bit_list = text_to_bit_list(text)
         mx = binary_lists_to_decimal_list(split_list(bit_list, self.M))
 
-        print(f"Xnk: {xnk}")
-        print(f"Mx: {mx}")
+        list_of_mx = split_poly(mx, k)
+        list_of_cx = []
 
-        multi_m_gen = mx * xnk
-        rx = multi_m_gen % generative_poly
+        for mx in list_of_mx:
+            multi_m_gen = mx.get_shifted(n - k)
+            rx = multi_m_gen % generative_poly
 
-        print(f"m * gen: {multi_m_gen}")
-        print(f"rx: {rx}\n")
+            cx = multi_m_gen + rx
+            list_of_cx.append(cx)
 
-        cx = multi_m_gen + rx
+            # for i in range(5):
+            #     cx_shifted = cx.get_cyclic_shifted(i)
+            #     print(f"cx(cyclic shifted {i} times)")
+            #     print(f"cx after shift: {cx_shifted}")
+            #     print(f"Remainder: {cx_shifted % generative_poly}")
+            #     print()
+            # print()
 
-        print(f"Tekst: {text}")
-        print(f"Generative poly: {generative_poly}")
-        print(f"Lista bitowa: {bit_list}")
-        print(f"cx: {cx}")
-
-        print(f"mod: {cx % generative_poly}")
+        return list_of_cx

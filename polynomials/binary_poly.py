@@ -163,7 +163,6 @@ class BinaryPoly(Poly):
         return BinaryPoly([int(x) for x in bin(result)[2:]])
 
     def __mod__(self, other):
-        # Polynomial division remainder
         dividend = self.coefficients[:]
         divisor = other.coefficients
         while len(dividend) >= len(divisor):

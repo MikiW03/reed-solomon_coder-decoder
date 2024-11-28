@@ -26,6 +26,10 @@ class AlphaPoly(Poly):
     def __repr__(self):
         return f"AlphaPoly({self.coefficients})"
 
+    def __setitem__(self, key, value):
+        self.coefficients[key] = value
+        self.alphas[key] = Alpha(value)
+
     def get_trimmed(self):
         coefficients_copy = self.coefficients[:]
         while len(coefficients_copy) > 1 and coefficients_copy[0] is None:
@@ -136,6 +140,28 @@ class AlphaPoly(Poly):
                 result[i + j] = (AlphaPoly([result[i + j]]) + AlphaPoly([((poly1[i] + poly2[j]) % (2 ** self.M - 1))])).coefficients[0]
 
         return AlphaPoly(result)
+
+    def get_cyclic_shifted(self, no_of_positions, direction="left"):
+        n = len(self.coefficients)
+        shifted_coefficients = self.coefficients[:]
+
+        no_of_positions = no_of_positions % n
+
+        if direction == "left":
+            shifted_coefficients = shifted_coefficients[no_of_positions:] + shifted_coefficients[:no_of_positions]
+        elif direction == "right":
+            shifted_coefficients = shifted_coefficients[-no_of_positions:] + shifted_coefficients[:-no_of_positions]
+        else:
+            raise ValueError("Direction must be 'left' or 'right'")
+
+        return AlphaPoly(shifted_coefficients)
+
+    def get_shifted(self, no_of_positions):
+        copy = AlphaPoly(self.coefficients)
+        copy *= AlphaPoly([1] + [None] * no_of_positions)
+
+        return copy
+
 
 
 

@@ -8,6 +8,9 @@ class Poly(ABC):
     def __str__(self):
         pass
 
+    def __len__(self):
+        return len(self.coefficients)
+
     @abstractmethod
     def __repr__(self):
         pass
