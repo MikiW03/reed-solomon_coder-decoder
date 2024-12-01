@@ -106,14 +106,15 @@ class AlphaPoly(Poly):
                     alfa2 = sub_poly[i]
                     # print(f"Alfa1: {alfa1} | Alfa2: {alfa2}")
 
-                    value = self.gallois.alpha_powers[alfa1] if alfa2 is None else self.gallois.alpha_powers[alfa1] + self.gallois.alpha_powers[alfa2]
+                    value = self.gallois.alpha_powers[alfa1] if alfa2 is None else self.gallois.alpha_powers[alfa1] + \
+                                                                                   self.gallois.alpha_powers[alfa2]
                     remainder[iteration + i] = self.gallois.poly_2_alpha_power(value)
             # print(iteration)
             # print(f"{poly1} : {poly2} = {result}")
             # print(f"{sub_poly}")
             # print(remainder)
             iteration += 1
-        result = [(x + (2**self.M - 1)) if (x is not None and x < 0) else x for x in result]
+        result = [(x + (2 ** self.M - 1)) if (x is not None and x < 0) else x for x in result]
 
         return AlphaPoly(result), AlphaPoly(remainder)
 
@@ -137,7 +138,8 @@ class AlphaPoly(Poly):
             for j in range(len(poly2)):
                 if poly2[j] is None:
                     continue
-                result[i + j] = (AlphaPoly([result[i + j]]) + AlphaPoly([((poly1[i] + poly2[j]) % (2 ** self.M - 1))])).coefficients[0]
+                result[i + j] = \
+                (AlphaPoly([result[i + j]]) + AlphaPoly([((poly1[i] + poly2[j]) % (2 ** self.M - 1))])).coefficients[0]
 
         return AlphaPoly(result)
 
@@ -158,10 +160,6 @@ class AlphaPoly(Poly):
 
     def get_shifted(self, no_of_positions):
         copy = AlphaPoly(self.coefficients)
-        copy *= AlphaPoly([1] + [None] * no_of_positions)
+        copy *= AlphaPoly([0] + [None] * no_of_positions)
 
         return copy
-
-
-
-

@@ -1,6 +1,10 @@
-from alpha import Alpha
+import galois
+from galois import Galois
 from polynomials.alpha_poly import AlphaPoly
 from global_settings import Global
+from polynomials.binary_poly import BinaryPoly
+
+galois = Galois()
 
 
 def text_to_bit_list(text):
@@ -15,7 +19,10 @@ def text_to_bit_list(text):
 def bit_list_to_text(bit_list):
     chars = []
     for i in range(0, len(bit_list), 8):
-        byte = bit_list[i:i + 8]
+        if len(set(bit_list[i:i + 8])) > 1:
+            byte = bit_list[i:i + 8]
+        else:
+            continue
         char = chr(int(''.join(map(str, byte)), 2))
         chars.append(char)
 
@@ -34,15 +41,15 @@ def split_list(tab, M):
     return result
 
 
-def binary_lists_to_decimal_list(binary_lists):
-    decimal_list = []
+def binary_list_to_alphas(binary_lists):
+    alphas_list = []
     for binary_list in binary_lists:
-        decimal_value = 0
-        for bit in binary_list:
-            decimal_value = (decimal_value << 1) | bit
-        decimal_list.append(decimal_value)
+        if len(set(binary_list)) > 1 or binary_list[0] != 0:
+            alphas_list.append(galois.poly_2_alpha_power(BinaryPoly(binary_list)))
+        else:
+            alphas_list.append(None)
 
-    return AlphaPoly(decimal_list)
+    return AlphaPoly(alphas_list)
 
 
 def split_poly(poly, size_of_parts):
@@ -51,7 +58,7 @@ def split_poly(poly, size_of_parts):
 
     result = [AlphaPoly(lst[i:i + size_of_parts]) for i in range(0, len(lst), size_of_parts)]
     if len(result[-1]) < size_of_parts:
-        result[-1] *= AlphaPoly([1] + [fill_value] * (size_of_parts - len(result[-1])))
+        result[-1] *= AlphaPoly([0] + [fill_value] * (size_of_parts - len(result[-1])))
     return result
 
 
@@ -68,7 +75,7 @@ class Coder:
         k = n - 2 * self.T
 
         bit_list = text_to_bit_list(text)
-        mx = binary_lists_to_decimal_list(split_list(bit_list, self.M))
+        mx = binary_list_to_alphas(split_list(bit_list, self.M))
 
         list_of_mx = split_poly(mx, k)
         list_of_cx = []
@@ -88,4 +95,12 @@ class Coder:
             #     print()
             # print()
 
+        # x = 1
+        # y = 59
+        # print(AlphaPoly([cx.coefficients[62 - 24 + (25-x)]]) + AlphaPoly([y]))
+        # cx.coefficients[62 - 24 + (25-x)] = y
+        # cx = AlphaPoly(cx.coefficients)
+        #
+        # print(cx)
+        # print(cx % generative_poly)
         return list_of_cx
