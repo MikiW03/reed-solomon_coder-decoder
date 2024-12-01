@@ -16,6 +16,11 @@ class Simulation():
 
         print(f"Rodzaj błędu | Liczba | Poprawne | Niepoprawne | Poprawne Zle")
 
+        # error_coded = this.insert_error(coded_text, 1)
+        # print(coded_text)
+        # print(error_coded)        
+    
+
         # 1 - 5 error rand
         for err in range(0, 6):
             correct = 0
@@ -37,8 +42,11 @@ class Simulation():
         for i in range(0, error_number):
             error_index = random.randint(0, max_error_index)
             error_value = random.randint(2, max_error_value)
-
-            new_coded_text[0][error_index] = error_value
+            
+            if coded_text[0].coefficients[error_index] == None:
+                new_coded_text[0][error_index] = 0
+            else:
+                new_coded_text[0][error_index] = coded_text[0].coefficients[error_index] + 1
         
         return new_coded_text
 
@@ -53,7 +61,6 @@ class Simulation():
                 error_value = random.randint(2, max_error_value)
                 if random.randint(0 ,1) == 0:
                     error_index = error_start_index + j
-
                     new_coded_text[0][error_index] = error_value
         
         return new_coded_text
