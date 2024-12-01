@@ -8,6 +8,7 @@ class Galois:
     T = Global.T
 
     alpha_powers = None
+    generative_poly = None
 
     def __init__(self):
         self.alpha_powers = self.generate_alpha_powers()
@@ -27,10 +28,10 @@ class Galois:
         return powers
 
     def generate_generative_polynomial(self):
-        generative_poly = AlphaPoly([0, 1])  # alfa^0 * x + alfa^1
+        generative_poly = AlphaPoly([0, 1])
 
         for i in range(2, 2 * self.T):
             term = AlphaPoly([0, i])
             generative_poly *= term
 
-        return generative_poly
+        self.generative_poly = generative_poly

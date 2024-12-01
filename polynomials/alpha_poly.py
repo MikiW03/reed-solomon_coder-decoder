@@ -12,7 +12,7 @@ class AlphaPoly(Poly):
 
     def __init__(self, coefficients):
         from galois import Galois
-        self.gallois = Galois()
+        self.galois = Galois()
         self.coefficients = coefficients
         self.alphas = [Alpha(x) for x in self.coefficients]
 
@@ -64,11 +64,6 @@ class AlphaPoly(Poly):
         max_len = len(poly1) - len(poly2)
 
         while iteration <= max_len:
-            # if remainder[iteration] is None:
-            #     result.append(0)
-            # else:
-            #     result.append((remainder[iteration]) - poly2[0])
-
             if remainder[iteration] is None or poly2[0] is None:
                 result.append(None)
                 iteration += 1
@@ -76,7 +71,6 @@ class AlphaPoly(Poly):
             else:
                 result.append(remainder[iteration] - poly2[0])
 
-            # Create sub poly
             sub_poly = []
             if result[iteration] is None:
                 pass
@@ -92,10 +86,9 @@ class AlphaPoly(Poly):
                         alfa1 = result[iteration]
                         alfa2 = i
 
-                        value = self.gallois.alpha_powers[alfa1] * self.gallois.alpha_powers[alfa2]
-                        sub_poly.append(self.gallois.poly_2_alpha_power(value))
+                        value = self.galois.alpha_powers[alfa1] * self.galois.alpha_powers[alfa2]
+                        sub_poly.append(self.galois.poly_2_alpha_power(value))
 
-            # Reminder - sub_poly
             for i in range(0, len(sub_poly)):
                 if remainder[iteration + i] is None:
                     remainder[iteration + i] = sub_poly[i]
@@ -104,15 +97,10 @@ class AlphaPoly(Poly):
                 else:
                     alfa1 = remainder[i + iteration]
                     alfa2 = sub_poly[i]
-                    # print(f"Alfa1: {alfa1} | Alfa2: {alfa2}")
 
-                    value = self.gallois.alpha_powers[alfa1] if alfa2 is None else self.gallois.alpha_powers[alfa1] + \
-                                                                                   self.gallois.alpha_powers[alfa2]
-                    remainder[iteration + i] = self.gallois.poly_2_alpha_power(value)
-            # print(iteration)
-            # print(f"{poly1} : {poly2} = {result}")
-            # print(f"{sub_poly}")
-            # print(remainder)
+                    value = self.galois.alpha_powers[alfa1] if alfa2 is None else self.galois.alpha_powers[alfa1] + \
+                                                                                  self.galois.alpha_powers[alfa2]
+                    remainder[iteration + i] = self.galois.poly_2_alpha_power(value)
             iteration += 1
         result = [(x + (2 ** self.M - 1)) if (x is not None and x < 0) else x for x in result]
 
@@ -139,7 +127,8 @@ class AlphaPoly(Poly):
                 if poly2[j] is None:
                     continue
                 result[i + j] = \
-                (AlphaPoly([result[i + j]]) + AlphaPoly([((poly1[i] + poly2[j]) % (2 ** self.M - 1))])).coefficients[0]
+                    (AlphaPoly([result[i + j]]) + AlphaPoly(
+                        [((poly1[i] + poly2[j]) % (2 ** self.M - 1))])).coefficients[0]
 
         return AlphaPoly(result)
 
@@ -163,3 +152,6 @@ class AlphaPoly(Poly):
         copy *= AlphaPoly([0] + [None] * no_of_positions)
 
         return copy
+
+    def get_hamming_weight(self):
+        return len(list(filter(lambda x: x is not None, self.coefficients)))

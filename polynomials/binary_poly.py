@@ -3,25 +3,18 @@ from polynomials.poly import Poly
 
 
 def binary_vector_division(dividend, divisor):
-    # Ensure the dividend is at least as long as the divisor
     len_dividend = len(dividend)
     len_divisor = len(divisor)
 
-    # Initialize quotient and remainder
     quotient = [0] * (len_dividend - len_divisor + 1)
     remainder = dividend.copy()
 
     for i in range(len_dividend - len_divisor + 1):
-        # Check if the current leading term of the remainder can be divided
-        if remainder[i] == 1:  # This means we can divide
-            # Set the corresponding position in the quotient to 1
+        if remainder[i] == 1:
             quotient[i] = 1
-            # Perform XOR with the shifted divisor
             for j in range(len_divisor):
                 remainder[i + j] ^= divisor[j]
 
-    # The remainder now holds the result of the division
-    # Remove leading zeros from the remainder
     while len(remainder) > 0 and remainder[0] == 0:
         remainder.pop(0)
 

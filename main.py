@@ -1,14 +1,17 @@
 from decoder import Decoder
-from coder import Coder, galois
+from coder import Coder
 from galois import Galois
 
 if __name__ == '__main__':
-    gallois = Galois()
-    coder = Coder(gallois)
-    decoder = Decoder(gallois)
+    galois = Galois()
+    galois.generate_generative_polynomial()
 
-    text = "sdadsaa"
+    coder = Coder(galois)
+    decoder = Decoder(galois)
 
-    coded_text = coder.RS_coder(text)[0]
+    text = "Lorem ipsum dolor sit amet."
+    coded_text = coder.code(text)
     decoded_text = decoder.decode(coded_text)
+
     print(decoded_text)
+    print(f"{'Decoded succesfully' if text == decoded_text else 'Decoded with errors'}")

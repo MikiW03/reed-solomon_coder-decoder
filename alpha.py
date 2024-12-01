@@ -8,9 +8,9 @@ class Alpha:
 
     def __init__(self, power=None):
         from galois import Galois
-        self.gallois = Galois()
+        self.galois = Galois()
         self.power = power
-        self.poly_representation = BinaryPoly([0]) if self.power is None else self.gallois.alpha_powers[power]
+        self.poly_representation = BinaryPoly([0]) if self.power is None else self.galois.alpha_powers[power]
 
     def __repr__(self):
         return f"Alpha({self.power})"
@@ -36,7 +36,7 @@ class Alpha:
         if result == BinaryPoly([0]):
             return Alpha()
 
-        return Alpha(self.gallois.poly_2_alpha_power(result))
+        return Alpha(self.galois.poly_2_alpha_power(result))
 
     def __mul__(self, other):
         if self.power is None or other.power is None:
