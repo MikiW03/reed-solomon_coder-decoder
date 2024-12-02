@@ -1,6 +1,7 @@
 from alpha import Alpha
 from polynomials.poly import Poly
 from global_settings import Global
+from polynomials.binary_poly import BinaryPoly
 
 
 class AlphaPoly(Poly):
@@ -155,3 +156,14 @@ class AlphaPoly(Poly):
 
     def get_hamming_weight(self):
         return len(list(filter(lambda x: x is not None, self.coefficients)))
+
+    def to_binary_poly(self):
+        binary_list = []
+
+        for alpha in self.coefficients:
+            if alpha is None:
+                binary_list.extend([0, 0, 0, 0, 0, 0])
+            else:
+                binary_list.extend(self.galois.alpha_powers[alpha].get_filled(6).coefficients)
+
+        return BinaryPoly(binary_list)

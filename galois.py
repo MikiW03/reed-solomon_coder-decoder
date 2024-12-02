@@ -13,7 +13,9 @@ class Galois:
     def __init__(self):
         self.alpha_powers = self.generate_alpha_powers()
 
-    def poly_2_alpha_power(self, poly):
+    def poly_2_alpha_power(self, poly: BinaryPoly):
+        if poly == BinaryPoly([0, 0, 0, 0, 0, 0]):
+            return None
         return self.alpha_powers.index(poly)
 
     def generate_alpha_powers(self):
@@ -35,3 +37,10 @@ class Galois:
             generative_poly *= term
 
         self.generative_poly = generative_poly
+
+    def binary_poly_to_alpha_poly(self, binary_poly: BinaryPoly):
+        alphas_list = []
+        for i in range(0, len(binary_poly.coefficients), 6):
+            alphas_list.append(self.poly_2_alpha_power(BinaryPoly(binary_poly.coefficients[i:i + 6])))
+
+        return AlphaPoly(alphas_list)
