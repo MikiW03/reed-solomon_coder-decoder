@@ -1,9 +1,9 @@
-from polynomials.alpha_poly import AlphaPoly
 from global_settings import Global
+from polynomials.alpha_poly import AlphaPoly
 from polynomials.binary_poly import BinaryPoly
 
 
-def binary_list_to_alphas(galois, binary_lists):
+def binary_list_to_alphas(galois, binary_lists: list[list[int]]):
     alphas_list = []
     for binary_list in binary_lists:
         if len(set(binary_list)) > 1 or binary_list[0] != 0:
@@ -14,7 +14,7 @@ def binary_list_to_alphas(galois, binary_lists):
     return AlphaPoly(alphas_list)
 
 
-def text_to_bit_list(text):
+def text_to_bit_list(text: str):
     bit_list = []
     for char in text:
         bits = format(ord(char), '08b')
@@ -23,7 +23,7 @@ def text_to_bit_list(text):
     return bit_list
 
 
-def split_list(tab, M):
+def split_list(tab: list[int | None], M: int):
     if M <= 0:
         raise ValueError("Length has to be greater than 0")
 
@@ -35,25 +35,26 @@ def split_list(tab, M):
     return result
 
 
-def split_poly(poly, size_of_parts):
+def split_poly(poly: AlphaPoly, size_of_parts: int):
     fill_value = None
     lst = poly.coefficients
 
     result = [AlphaPoly(lst[i:i + size_of_parts]) for i in range(0, len(lst), size_of_parts)]
     if len(result[-1]) < size_of_parts:
-        result[-1] *= AlphaPoly([0] + [fill_value] * (size_of_parts - len(result[-1])))
+        temp: list[int | None] = [fill_value] * (size_of_parts - len(result[-1]))
+        result[-1] *= AlphaPoly([0] + temp)
     return result
 
 
 class Coder:
-    M = Global.M
-    T = Global.T
+    M: int = Global.M
+    T: int = Global.T
     galois = None
 
     def __init__(self, galois):
         self.galois = galois
 
-    def code(self, text):
+    def code(self, text: str) -> list[AlphaPoly]:
         generative_poly = self.galois.generative_poly
         n = 2 ** self.M - 1
         k = n - 2 * self.T

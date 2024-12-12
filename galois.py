@@ -1,14 +1,14 @@
+from global_settings import Global
 from polynomials.alpha_poly import AlphaPoly
 from polynomials.binary_poly import BinaryPoly
-from global_settings import Global
 
 
 class Galois:
-    M = Global.M
-    T = Global.T
+    M: int = Global.M
+    T: int = Global.T
 
-    alpha_powers = None
-    generative_poly = None
+    alpha_powers: list[BinaryPoly] = None
+    generative_poly: AlphaPoly = None
 
     def __init__(self):
         self.alpha_powers = self.generate_alpha_powers()
@@ -38,7 +38,7 @@ class Galois:
 
         self.generative_poly = generative_poly
 
-    def binary_poly_to_alpha_poly(self, binary_poly: BinaryPoly):
+    def binary_poly_to_alpha_poly(self, binary_poly: BinaryPoly) -> AlphaPoly:
         alphas_list = []
         for i in range(0, len(binary_poly.coefficients), 6):
             alphas_list.append(self.poly_2_alpha_power(BinaryPoly(binary_poly.coefficients[i:i + 6])))

@@ -30,12 +30,12 @@ def print_results(no_of_errors: int, tries: int, correct_tries: int, incorrect_t
 
 
 class Simulation:
-    M = Global.M
-    T = Global.T
+    M: int = Global.M
+    T: int = Global.T
 
     galois = None
-    coder = None
-    decoder = None
+    coder: Coder = None
+    decoder: Decoder = None
 
     def __init__(self, galois, decoder: Decoder):
         self.galois = galois
@@ -45,7 +45,7 @@ class Simulation:
         self.text = "Lorem ipsum dolor sit amet."
         self.coded_text = self.coder.code(self.text)[0]
 
-    def test_symbol_errors(self, symbol_errors: dict) -> None:
+    def test_symbol_errors(self, symbol_errors: dict[int, int]):
         filepath = f"tests\\{type(self.decoder).__name__}\\symbol_tests_results.txt"
         print_header(filepath)
 
@@ -55,10 +55,12 @@ class Simulation:
                 coded_text_with_errors = self.insert_symbol_error(self.coded_text, no_of_errors)
                 decoded_text = self.decoder.decode([coded_text_with_errors])
                 correct += 1 if self.text == decoded_text else 0
+                print("(in progress...)", end=" ")
+                print_results(no_of_errors, tries, correct, tries - correct, filepath=None)
 
-                print_results(no_of_errors, tries, correct, tries - correct, filepath)
+            print_results(no_of_errors, tries, correct, tries - correct, filepath)
 
-    def test_burst_errors(self, burst_errors: dict) -> None:
+    def test_burst_errors(self, burst_errors: dict[int, int]):
         filepath = f"tests\\{type(self.decoder).__name__}\\burst_tests_results.txt"
         print_header(filepath)
 
@@ -71,10 +73,12 @@ class Simulation:
                 error_coded = self.insert_burst_error(self.coded_text, burst_len)
                 decoded_text = self.decoder.decode([error_coded])
                 correct += 1 if self.text == decoded_text else 0
+                print("(in progress...)", end=" ")
+                print_results(burst_len, tries, correct, tries - correct, filepath=None)
 
             print_results(burst_len, tries, correct, tries - correct, filepath)
 
-    def insert_symbol_error(self, coded_text, error_number):
+    def insert_symbol_error(self, coded_text: AlphaPoly, error_number: int):
         error_number = min(error_number, len(coded_text.coefficients))
         max_error_value = 2 ** self.M - 2
         max_error_index = len(coded_text.coefficients) - 1
@@ -95,7 +99,7 @@ class Simulation:
 
         return new_coded_text
 
-    def insert_burst_error(self, coded_text: AlphaPoly, burst_len) -> AlphaPoly:
+    def insert_burst_error(self, coded_text: AlphaPoly, burst_len: int) -> AlphaPoly:
         binary_coded_text = coded_text.to_binary_poly().coefficients
 
         max_starting_index = len(binary_coded_text) - burst_len - 1

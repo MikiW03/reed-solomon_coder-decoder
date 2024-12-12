@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 
 class Poly(ABC):
-    coefficients = None
+    coefficients: list[int | None] = None
 
     @abstractmethod
     def __str__(self):
@@ -26,7 +26,7 @@ class Poly(ABC):
         pass
 
     @abstractmethod
-    def get_filled(self, desired_no_of_bits):
+    def get_filled(self, desired_no_of_bits: int):
         pass
 
     @abstractmethod

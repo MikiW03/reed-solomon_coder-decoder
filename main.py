@@ -12,12 +12,18 @@ if __name__ == '__main__':
 
     symbol_errors = {
         # no_of_errors: tries
-        6: 1,
-        7: 2
+        1: 100,
+        2: 100,
+        3: 100,
+        4: 100,
+        5: 100,
+        6: 100,
+        7: 100
     }
 
     burst_errors = {
         # burst_length: tries
+        1: 100,
         2: 100,
         3: 100,
         6: 100,

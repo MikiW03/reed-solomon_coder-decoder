@@ -2,7 +2,7 @@ from global_settings import Global
 from polynomials.poly import Poly
 
 
-def binary_vector_division(dividend, divisor):
+def binary_vector_division(dividend: list[int], divisor: list[int]):
     len_dividend = len(dividend)
     len_divisor = len(divisor)
 
@@ -22,11 +22,13 @@ def binary_vector_division(dividend, divisor):
 
 
 class BinaryPoly(Poly):
-    M = Global.M
-    T = Global.T
-    IRREDUCIBLE_POLY = Global.IRREDUCIBLE_POLY
+    M: int = Global.M
+    T: int = Global.T
+    IRREDUCIBLE_POLY: list[int] = Global.IRREDUCIBLE_POLY
 
-    def __init__(self, coefficients):
+    coefficients: list[int] = None
+
+    def __init__(self, coefficients: list[int]):
         self.coefficients = coefficients
 
     def __str__(self):
@@ -65,7 +67,7 @@ class BinaryPoly(Poly):
             coefficients_copy.pop(0)
         return BinaryPoly(coefficients_copy)
 
-    def get_filled(self, desired_no_of_bits):
+    def get_filled(self, desired_no_of_bits: int):
         coefficients_copy = self.coefficients[:]
         for _ in range(desired_no_of_bits - len(self.coefficients)):
             coefficients_copy = [0] + coefficients_copy

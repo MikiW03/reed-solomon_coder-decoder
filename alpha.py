@@ -1,12 +1,16 @@
-from polynomials.binary_poly import BinaryPoly
 from global_settings import Global
+from polynomials.binary_poly import BinaryPoly
 
 
 class Alpha:
-    M = Global.M
-    T = Global.T
+    M: int = Global.M
+    T: int = Global.T
 
-    def __init__(self, power=None):
+    galois = None
+    power: None | int = None
+    poly_representation: BinaryPoly = None
+
+    def __init__(self, power: int | None = None):
         from galois import Galois
         self.galois = Galois()
         self.power = power

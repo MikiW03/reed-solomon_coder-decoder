@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from polynomials.alpha_poly import AlphaPoly
 
 
-def bit_list_to_text(bit_list):
+def bit_list_to_text(bit_list: list):
     chars = []
     for i in range(0, len(bit_list), 8):
         if len(set(bit_list[i:i + 8])) > 1:
@@ -16,7 +16,7 @@ def bit_list_to_text(bit_list):
     return ''.join(chars)
 
 
-def fix_error(message: AlphaPoly, generative_poly, T):
+def fix_error(message: AlphaPoly, generative_poly: AlphaPoly, T: int):
     if message % generative_poly == AlphaPoly([None]):
         return message
 
@@ -34,5 +34,5 @@ def fix_error(message: AlphaPoly, generative_poly, T):
 
 class Decoder(ABC):
     @abstractmethod
-    def decode(self, message: [AlphaPoly]):
+    def decode(self, message: list[AlphaPoly]) -> str:
         pass

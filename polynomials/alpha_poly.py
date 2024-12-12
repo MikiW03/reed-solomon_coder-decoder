@@ -1,3 +1,5 @@
+from typing import Literal
+
 from alpha import Alpha
 from global_settings import Global
 from polynomials.binary_poly import BinaryPoly
@@ -5,13 +7,14 @@ from polynomials.poly import Poly
 
 
 class AlphaPoly(Poly):
-    M = Global.M
-    T = Global.T
+    M: int = Global.M
+    T: int = Global.T
 
-    coefficients = None
-    alphas = None
+    coefficients: list[int | None] = None
+    alphas: list[Alpha] = None
+    galois = None
 
-    def __init__(self, coefficients):
+    def __init__(self, coefficients: list[int | None]):
         from galois import Galois
         self.galois = Galois()
         self.coefficients = coefficients
@@ -27,13 +30,13 @@ class AlphaPoly(Poly):
     def __repr__(self):
         return f"AlphaPoly({self.coefficients})"
 
-    def __setitem__(self, key, value):
-        new_value = None if value is None else value % (2**self.M-1)
+    def __setitem__(self, key: int, value: int):
+        new_value = None if value is None else value % (2 ** self.M - 1)
 
         self.coefficients[key] = new_value
         self.alphas[key] = Alpha(new_value)
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int):
         return self.coefficients[index]
 
     def get_trimmed(self):
@@ -42,7 +45,7 @@ class AlphaPoly(Poly):
             coefficients_copy.pop(0)
         return AlphaPoly(coefficients_copy)
 
-    def get_filled(self, desired_no_of_bits):
+    def get_filled(self, desired_no_of_bits: int):
         filled_coefficients = ([None] * (desired_no_of_bits - len(self.coefficients))) + self.coefficients
         return AlphaPoly(filled_coefficients)
 
@@ -104,7 +107,8 @@ class AlphaPoly(Poly):
                     alfa1 = remainder[i + iteration]
                     alfa2 = sub_poly[i]
 
-                    value = self.galois.alpha_powers[alfa1] if alfa2 is None else self.galois.alpha_powers[alfa1] + self.galois.alpha_powers[alfa2]
+                    value = self.galois.alpha_powers[alfa1] if alfa2 is None else self.galois.alpha_powers[alfa1] + \
+                                                                                  self.galois.alpha_powers[alfa2]
                     remainder[iteration + i] = self.galois.poly_2_alpha_power(value)
             iteration += 1
         result = [(x + (2 ** self.M - 1)) if (x is not None and x < 0) else x for x in result]
@@ -137,7 +141,7 @@ class AlphaPoly(Poly):
 
         return AlphaPoly(result)
 
-    def get_cyclic_shifted(self, no_of_positions, direction="left"):
+    def get_cyclic_shifted(self, no_of_positions: int, direction: Literal['left', 'right'] = "left"):
         n = len(self.coefficients)
         shifted_coefficients = self.coefficients[:]
 
@@ -152,9 +156,11 @@ class AlphaPoly(Poly):
 
         return AlphaPoly(shifted_coefficients)
 
-    def get_shifted(self, no_of_positions):
+    def get_shifted(self, no_of_positions: int):
+        temp: list[int | None] = [None] * no_of_positions
+
         copy = AlphaPoly(self.coefficients)
-        copy *= AlphaPoly([0] + [None] * no_of_positions)
+        copy *= AlphaPoly([0] + temp)
 
         return copy
 
