@@ -38,49 +38,41 @@ class TestBinaryPoly(TestCase):
 
     # chatgpt
     def test_addition_xor(self):
-        # Dodawanie (XOR) w ciele Galois
         p3 = BinaryPoly([1, 0, 1])
         p4 = BinaryPoly([1, 1, 0])
-        self.assertEqual(p3 + p4, BinaryPoly([0, 1, 1]))  # XOR na bitach
+        self.assertEqual(p3 + p4, BinaryPoly([0, 1, 1]))
 
     def test_multiplication_in_galois_field(self):
-        # Mnożenie w GF(2)
-        p3 = BinaryPoly([1, 0, 1])  # x^2 + 1
-        p4 = BinaryPoly([1, 1])  # x + 1
-        # Wynik: (x^2 + 1) * (x + 1) = x^3 + x^2 + x + 1
+        p3 = BinaryPoly([1, 0, 1])
+        p4 = BinaryPoly([1, 1])
         self.assertEqual(p3 * p4, BinaryPoly([1, 1, 1, 1]))
 
     def test_division_exact(self):
-        # Dokładny podział wielomianów
-        p3 = BinaryPoly([1, 0, 1, 1])  # x^3 + x + 1
-        p4 = BinaryPoly([1, 1])  # x + 1
-        # Wynik: (x^3 + x + 1) / (x + 1) = x^2 + 1
+        p3 = BinaryPoly([1, 0, 1, 1])
+        p4 = BinaryPoly([1, 1])
         self.assertEqual(p3 / p4, BinaryPoly([1, 1, 1, 0, 0, 0]))
 
-        p5 = BinaryPoly([1, 0, 1, 1])  # x^3 + x + 1
-        p6 = BinaryPoly([1, 0, 1])  # x^2 + 1
+        p5 = BinaryPoly([1, 0, 1, 1])
+        p6 = BinaryPoly([1, 0, 1])
         self.assertEqual(p5 / p6, BinaryPoly([1, 0, 1, 0, 0, 1]))
 
     def test_division_with_remainder(self):
-        #     Podział z resztą
-        p3 = BinaryPoly([1, 0, 1, 1])  # x^3 + x + 1
-        p4 = BinaryPoly([1, 0, 1])  # x^2 + 1
+        p3 = BinaryPoly([1, 0, 1, 1])
+        p4 = BinaryPoly([1, 0, 1])
         self.assertEqual(p3 / p4, BinaryPoly([1, 0, 1, 0, 0, 1]))
 
     def test_edge_cases(self):
-        #     Przypadki brzegowe
         zero_poly = BinaryPoly([0])
         one_poly = BinaryPoly([1])
         self.assertEqual(zero_poly + one_poly, one_poly)
         self.assertEqual(zero_poly * one_poly, zero_poly)
         self.assertEqual(one_poly * one_poly, one_poly)
-        self.assertEqual(zero_poly.get_inverse(), None)  # Brak odwrotności dla zera
+        self.assertEqual(zero_poly.get_inverse(), None)
 
     def test_large_polynomial_operations(self):
-        #     Operacje na dużych wielomianach
         large_poly1 = BinaryPoly([1] * 1000)
         large_poly2 = BinaryPoly([1, 0] * 500)
-        result_add = large_poly1 + large_poly2  # XOR
-        self.assertEqual(result_add.coefficients.count(1), 500)  # Wynik ma 500 jedynek
-        result_mul = large_poly1 * BinaryPoly([1])  # Mnożenie przez 1
+        result_add = large_poly1 + large_poly2
+        self.assertEqual(result_add.coefficients.count(1), 500)
+        result_mul = large_poly1 * BinaryPoly([1])
         self.assertEqual(result_mul, large_poly1)

@@ -1,7 +1,7 @@
 from alpha import Alpha
-from polynomials.poly import Poly
 from global_settings import Global
 from polynomials.binary_poly import BinaryPoly
+from polynomials.poly import Poly
 
 
 class AlphaPoly(Poly):
@@ -28,8 +28,13 @@ class AlphaPoly(Poly):
         return f"AlphaPoly({self.coefficients})"
 
     def __setitem__(self, key, value):
-        self.coefficients[key] = value
-        self.alphas[key] = Alpha(value)
+        new_value = None if value is None else value % (2**self.M-1)
+
+        self.coefficients[key] = new_value
+        self.alphas[key] = Alpha(new_value)
+
+    def __getitem__(self, index):
+        return self.coefficients[index]
 
     def get_trimmed(self):
         coefficients_copy = self.coefficients[:]
@@ -99,8 +104,7 @@ class AlphaPoly(Poly):
                     alfa1 = remainder[i + iteration]
                     alfa2 = sub_poly[i]
 
-                    value = self.galois.alpha_powers[alfa1] if alfa2 is None else self.galois.alpha_powers[alfa1] + \
-                                                                                  self.galois.alpha_powers[alfa2]
+                    value = self.galois.alpha_powers[alfa1] if alfa2 is None else self.galois.alpha_powers[alfa1] + self.galois.alpha_powers[alfa2]
                     remainder[iteration + i] = self.galois.poly_2_alpha_power(value)
             iteration += 1
         result = [(x + (2 ** self.M - 1)) if (x is not None and x < 0) else x for x in result]
