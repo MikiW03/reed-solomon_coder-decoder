@@ -48,5 +48,12 @@ class Alpha:
 
         return Alpha((self.power + other.power) % (2 ** self.M - 1))
 
+    def __pow__(self, power: int):
+        result = Alpha(0)
+        for _ in range(power):
+            result *= self
+
+        return result
+
     def __truediv__(self, other):
         return self * other.get_inverse()

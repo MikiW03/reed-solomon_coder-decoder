@@ -177,3 +177,10 @@ class AlphaPoly(Poly):
                 binary_list.extend(self.galois.alpha_powers[alpha].get_filled(6).coefficients)
 
         return BinaryPoly(binary_list)
+
+    def replace_x_and_count(self, x: Alpha):
+        result = Alpha()
+        for (i, alpha) in enumerate(self.alphas):
+            result += alpha * (x ** (len(self.coefficients) - i - 1))
+
+        return result
