@@ -10,7 +10,7 @@ from polynomials.binary_poly import BinaryPoly
 
 
 def print_header(filepath: str = None, file_mode: str = "a"):
-    header = f"Errors;Tries;Completed;Failed"
+    header = f"Errors;Tries;Completed;Failed;Success_rate"
     print(header)
 
     if filepath is not None:
@@ -21,7 +21,7 @@ def print_header(filepath: str = None, file_mode: str = "a"):
 
 def print_results(no_of_errors: int, tries: int, correct_tries: int, incorrect_tries: int, filepath: str = None,
                   file_mode: str = "a"):
-    row = f"{no_of_errors};{tries};{correct_tries};{incorrect_tries}"
+    row = f"{no_of_errors};{tries};{correct_tries};{incorrect_tries};{round(correct_tries/(correct_tries+incorrect_tries), 2)}"
     print(row)
 
     if filepath is not None:
@@ -46,37 +46,41 @@ class Simulation:
         self.coded_text = self.coder.code(self.text)[0]
 
     def test_symbol_errors(self, symbol_errors: dict[int, int]):
-        filepath = f"tests\\{type(self.decoder).__name__}\\symbol_tests_results.txt"
-        print_header(filepath)
+        # filepath = f"tests\\{type(self.decoder).__name__}\\symbol_tests_results.txt"
+        # print_header(filepath)
 
         for (no_of_errors, tries) in symbol_errors.items():
             correct = 0
+            incorrect = 0
             for _ in range(tries):
                 coded_text_with_errors = self.insert_symbol_error(self.coded_text, no_of_errors)
-                decoded_text = self.decoder.decode([coded_text_with_errors])
-                correct += 1 if self.text == decoded_text else 0
-                print("(in progress...)", end=" ")
-                print_results(no_of_errors, tries, correct, tries - correct, filepath=None)
+                decoded_message = self.decoder.decode([coded_text_with_errors])[1]
+                correct += 1 if self.coded_text == decoded_message[0] else 0
+                incorrect += 1 if self.coded_text != decoded_message[0] else 0
+                # print("(in progress...)", end=" ")
+                # print_results(no_of_errors, tries, correct, incorrect, filepath=None)
 
-            print_results(no_of_errors, tries, correct, tries - correct, filepath)
+            # print_results(no_of_errors, tries, correct, incorrect, filepath)
 
     def test_burst_errors(self, burst_errors: dict[int, int]):
         filepath = f"tests\\{type(self.decoder).__name__}\\burst_tests_results.txt"
-        print_header(filepath)
+        # print_header(filepath)
 
         for (burst_len, tries) in burst_errors.items():
             correct = 0
+            incorrect = 0
 
-            if burst_len > len(self.coded_text.coefficients):
+            if burst_len > len(self.coded_text.coefficients) * self.M:
                 burst_len = 6 * (2 ** self.M - 1)
             for i in range(0, tries):
-                error_coded = self.insert_burst_error(self.coded_text, burst_len)
-                decoded_text = self.decoder.decode([error_coded])
-                correct += 1 if self.text == decoded_text else 0
+                coded_text_with_errors = self.insert_burst_error(self.coded_text, burst_len)
+                decoded_message = self.decoder.decode([coded_text_with_errors])[1]
+                correct += 1 if self.coded_text == decoded_message[0] else 0
+                incorrect += 1 if self.coded_text != decoded_message[0] else 0
                 print("(in progress...)", end=" ")
-                print_results(burst_len, tries, correct, tries - correct, filepath=None)
+                print_results(burst_len, tries, correct, incorrect, filepath=None)
 
-            print_results(burst_len, tries, correct, tries - correct, filepath)
+            print_results(burst_len, tries, correct, incorrect, filepath)
 
     def insert_symbol_error(self, coded_text: AlphaPoly, error_number: int):
         error_number = min(error_number, len(coded_text.coefficients))
@@ -89,6 +93,9 @@ class Simulation:
             errors_indexes.append(random.randint(0, max_error_index))
             errors_indexes = list(set(errors_indexes))
 
+        errors_indexes.sort()
+        print("errors indexes: ", end="")
+        print(errors_indexes)
         for index in errors_indexes:
             error_value = random.randint(1, max_error_value)
 

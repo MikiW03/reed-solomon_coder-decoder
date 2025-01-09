@@ -11,60 +11,58 @@ if __name__ == '__main__':
     fullDecoder = FullDecoder(galois)
 
     symbol_errors = {
-        # no_of_errors: tries
-        1: 100,
-        2: 100,
-        3: 100,
-        4: 100,
-        5: 100,
-        6: 100,
-        7: 100
+    #     # no_of_errors: tries
+        10: 1,
+    #     2: 500,
+    #     3: 500,
+    #     4: 500,
+    #     5: 500
     }
+    #
+    # burst_errors = {
+    #     # burst_length: tries
+    #     # 1: 100,
+    #     # 2: 100,
+    #     # 3: 100,
+    #     # 6: 100,
+    #     # 8: 100,
+    #     # 12: 100,
+    #     # 15: 100,
+    #     # 25: 100,
+    #     # 35: 100,
+    #     # 45: 100,
+    #     # 50: 100,
+    #     # 55: 100,
+    #     # 60: 500,
+    #     # 62: 500,
+    #     64: 500,
+    #     66: 500,
+    #     68: 500,
+    #     70: 500,
+    #     72: 500,
+    #     74: 500,
+    #     76: 500,
+    #     78: 500,
+    #     80: 500,
+    #     82: 500,
+    #     84: 500,
+    #     86: 500,
+    #     88: 500,
+    #     90: 500,
+    #     92: 500,
+    #     94: 500,
+    #     96: 500,
+    #     98: 500,
+    #     100: 500,
+    #     200: 500,
+    #     300: 500,
+    #     1000: 500
+    # }
 
-    burst_errors = {
-        # burst_length: tries
-        1: 100,
-        2: 100,
-        3: 100,
-        6: 100,
-        8: 100,
-        12: 100,
-        15: 100,
-        25: 100,
-        35: 100,
-        45: 100,
-        50: 100,
-        55: 100,
-        60: 100,
-        62: 100,
-        64: 100,
-        66: 100,
-        68: 100,
-        70: 100,
-        72: 100,
-        74: 100,
-        76: 100,
-        78: 100,
-        80: 100,
-        82: 100,
-        84: 100,
-        86: 100,
-        88: 100,
-        90: 100,
-        92: 100,
-        94: 100,
-        96: 100,
-        98: 100,
-        100: 100,
-        200: 100,
-        300: 100,
-        1000: 100
-    }
+    # simpleDecoderSim = Simulation(galois, simpleDecoder)
+    # simpleDecoderSim.test_symbol_errors(symbol_errors)
+    # simpleDecoderSim.test_burst_errors(burst_errors)
 
-    simpleDecoderSim = Simulation(galois, simpleDecoder)
-    simpleDecoderSim.test_symbol_errors(symbol_errors)
-    simpleDecoderSim.test_burst_errors(burst_errors)
-
-    # fullDecoderSim = Simulation(galois, fullDecoder)
-    # fullDecoderSim.test_symbol_errors(symbol_errors)
+    fullDecoderSim = Simulation(galois, fullDecoder)
+    fullDecoderSim.test_symbol_errors(symbol_errors)
     # fullDecoderSim.test_burst_errors(burst_errors)

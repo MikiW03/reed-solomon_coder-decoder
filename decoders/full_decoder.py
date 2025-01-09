@@ -5,6 +5,10 @@ from global_settings import Global
 from polynomials.alpha_poly import AlphaPoly
 
 
+def print_list_of_alpha_poly(alpha_poly_list: list[AlphaPoly]) -> list[str]:
+    return list(map(lambda x: str(x), alpha_poly_list))
+
+
 class FullDecoder(Decoder):
     M: int = Global.M
     T: int = Global.T
@@ -13,18 +17,79 @@ class FullDecoder(Decoder):
     def __init__(self, galois: Galois):
         self.galois = galois
 
-    def decode(self, message: list[AlphaPoly]) -> str:
+    def decode(self, message: list[AlphaPoly]) -> (str, list[AlphaPoly]):
         syndromes = self.calculate_syndromes(message)
-        print(syndromes)
+        print("Syndromes: ", end="")
+        print(print_list_of_alpha_poly(syndromes))
 
-        return ""
+        err_locator = self.find_err_locator(syndromes)
+        print("Error locator polynomial: ", end="")
+        print(print_list_of_alpha_poly(err_locator))
 
-    def calculate_syndromes(self, message: list[AlphaPoly]) -> list[Alpha]:
-        # TODO
-        syndromes = []
+        errors_positions = self.find_errors(err_locator)
+        print("Error indexes found: ", end="")
+        errors_positions.sort()
+        print(errors_positions)
+
+        error_evaluator = self.find_error_evaluator(syndromes, err_locator)
+        print("Errors evaluator: ", end="")
+        print(print_list_of_alpha_poly(error_evaluator))
+
+        return "", message
+
+    def calculate_syndromes(self, message: list[AlphaPoly]) -> list[AlphaPoly]:
+        syndromes_list = []
         for message_fragment in message:
+            syndromes_poly = []
             for i in range(1, 2 * self.T):
                 syndrome = message_fragment.replace_x_and_count(Alpha(i))
-                syndromes.append(syndrome)
+                syndromes_poly.append(syndrome.power)
+            syndromes_list.append(AlphaPoly(syndromes_poly))
 
-        return syndromes
+        return syndromes_list
+
+    def find_err_locator(self, syndromes_list: list[AlphaPoly]) -> list[AlphaPoly]:
+        err_locs = []
+        for syndromes in syndromes_list:
+            err_loc: list[int | None] = [0]
+            old_loc: list[int | None] = [0]
+
+            for i in range(0, len(syndromes)):
+                delta = Alpha(syndromes[i])
+                for j in range(1, len(err_loc)):
+                    delta += Alpha(err_loc[-(j + 1)]) * Alpha(syndromes[i - j])
+
+                old_loc = old_loc + [None]
+
+                if delta != Alpha(None):
+                    if len(old_loc) > len(err_loc):
+                        new_loc = AlphaPoly(old_loc).scale(delta).coefficients
+                        old_loc = AlphaPoly(err_loc).scale(delta.get_inverse()).coefficients
+
+                        err_loc = new_loc
+
+                    err_loc = (AlphaPoly(err_loc) + AlphaPoly(old_loc).scale(delta)).coefficients
+
+            err_locs.append(AlphaPoly(err_loc))
+
+        return err_locs
+
+    def find_errors(self, err_locs: list[AlphaPoly]) -> list[list[int]]:
+        err_pos_list = []
+        for err_loc in err_locs:
+            err_pos = []
+            for i in range(2**self.M - 1):
+                if err_loc.replace_x_and_count(Alpha(i)) == Alpha(None):
+                    err_pos.append((i - 1) % (2**self.M-1))
+
+            err_pos_list.append(err_pos)
+
+        return err_pos_list
+
+    def find_error_evaluator(self, syndromes_list, err_locs):
+        error_evaluators = []
+        for (syndromes, err_loc) in zip(syndromes_list, err_locs):
+            error_evaluator = (syndromes * err_loc)
+            error_evaluators.append(error_evaluator)
+
+        return error_evaluators

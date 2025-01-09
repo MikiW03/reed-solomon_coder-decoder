@@ -39,6 +39,14 @@ class AlphaPoly(Poly):
     def __getitem__(self, index: int):
         return self.coefficients[index]
 
+    def scale(self, scale_number):
+        coeffs = self.coefficients
+        new_coeffs = []
+        for coeff in coeffs:
+            new_coeffs.append((Alpha(coeff) * scale_number).power)
+            
+        return AlphaPoly(new_coeffs)
+
     def get_trimmed(self):
         coefficients_copy = self.coefficients[:]
         while len(coefficients_copy) > 1 and coefficients_copy[0] is None:

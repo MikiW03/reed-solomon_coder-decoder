@@ -34,5 +34,5 @@ def fix_error(message: AlphaPoly, generative_poly: AlphaPoly, T: int):
 
 class Decoder(ABC):
     @abstractmethod
-    def decode(self, message: list[AlphaPoly]) -> str:
+    def decode(self, message: list[AlphaPoly]) -> (str, list[AlphaPoly]):
         pass

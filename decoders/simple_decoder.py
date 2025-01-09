@@ -12,10 +12,12 @@ class SimpleDecoder(Decoder):
     def __init__(self, galois: Galois):
         self.galois = galois
 
-    def decode(self, message: list[AlphaPoly]) -> str:
+    def decode(self, message: list[AlphaPoly]) -> (str, list[AlphaPoly]):
         message_in_bits = []
+        message_fixed = []
         for message_fragment in message:
             message_fragment = fix_error(message_fragment, self.galois.generative_poly, self.T)
+            message_fixed.append(message_fragment)
             msg = message_fragment.coefficients
             data = [AlphaPoly(msg[:((2 ** self.M - 1) - self.T * 2)]), AlphaPoly(msg[2 ** self.M - self.T * 2:])]
 
@@ -26,4 +28,4 @@ class SimpleDecoder(Decoder):
 
         text = bit_list_to_text(message_in_bits)
 
-        return text
+        return text, message_fixed
