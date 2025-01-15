@@ -19,21 +19,24 @@ class FullDecoder(Decoder):
 
     def decode(self, message: list[AlphaPoly]) -> (str, list[AlphaPoly]):
         syndromes = self.calculate_syndromes(message)
-        print("Syndromes: ", end="")
-        print(print_list_of_alpha_poly(syndromes))
+        # print("Syndromes: ", end="")
+        # print(print_list_of_alpha_poly(syndromes))
 
         err_locator = self.find_err_locator(syndromes)
-        print("Error locator polynomial: ", end="")
-        print(print_list_of_alpha_poly(err_locator))
+        # print("Error locator polynomial: ", end="")
+        # print(print_list_of_alpha_poly(err_locator))
 
         errors_positions = self.find_errors(err_locator)
         print("Error indexes found: ", end="")
-        errors_positions.sort()
         print(errors_positions)
 
         error_evaluator = self.find_error_evaluator(syndromes, err_locator)
-        print("Errors evaluator: ", end="")
-        print(print_list_of_alpha_poly(error_evaluator))
+        # print("Errors evaluator: ", end="")
+        # print(print_list_of_alpha_poly(error_evaluator))
+
+        error_magnitudes = self.find_error_magnitude(err_locator, errors_positions, error_evaluator)
+        print("\nFound errors magnitudes: ", end="")
+        print(print_list_of_alpha_poly(error_magnitudes))
 
         return "", message
 
@@ -78,9 +81,9 @@ class FullDecoder(Decoder):
         err_pos_list = []
         for err_loc in err_locs:
             err_pos = []
-            for i in range(2**self.M - 1):
+            for i in range(2 ** self.M - 1):
                 if err_loc.replace_x_and_count(Alpha(i)) == Alpha(None):
-                    err_pos.append((i - 1) % (2**self.M-1))
+                    err_pos.append((i - 1) % (2 ** self.M))
 
             err_pos_list.append(err_pos)
 
@@ -93,3 +96,42 @@ class FullDecoder(Decoder):
             error_evaluators.append(error_evaluator)
 
         return error_evaluators
+
+    def find_error_magnitude(self, err_locs: list[AlphaPoly], err_positions: list[list[int]],
+                             error_evaluators: list[AlphaPoly]) -> list[AlphaPoly]:
+        magnitudes_list = []
+        for (err_loc, err_pos, error_evaluator) in zip(err_locs, err_positions, error_evaluators):
+            # Pochodna formalna lokatora błędów
+
+            test = []
+            for i, coef in enumerate(err_loc.coefficients):
+                if (len(err_loc.coefficients) - i - 1) % 2 == 1:
+                    test.append(coef)
+                else:
+                    test.append(None)
+
+            err_loc_derivative = AlphaPoly(test)
+
+            err_loc_derivative = err_loc_derivative.get_cyclic_shifted(1, 'right').get_trimmed()
+
+            print("Error locator derivative (Lambda'):", err_loc_derivative)
+
+            magnitudes = []
+            for pos in err_pos:
+                # Odwrotność pozycji błędu
+                alpha_neg_pos = Alpha(pos).get_inverse() if pos is not None else Alpha(None)
+
+                # Oblicz wartości wielomianów w x_i^-1
+                numerator = error_evaluator.replace_x_and_count(alpha_neg_pos)
+                denominator = err_loc_derivative.replace_x_and_count(alpha_neg_pos)
+                print("Numerator (Omega):", numerator)
+                print("Denominator (Lambda'):", denominator)
+
+                # Magnitude błędu
+                magnitude = numerator / denominator
+                magnitudes.append(magnitude)
+
+            # Dodaj wielomian magnitudy
+            magnitudes_list.append(AlphaPoly([x.power for x in magnitudes]))
+
+        return magnitudes_list

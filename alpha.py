@@ -14,7 +14,7 @@ class Alpha:
         from galois import Galois
         self.galois = Galois()
         self.power = power
-        self.poly_representation = BinaryPoly([0]) if self.power is None else self.galois.alpha_powers[power]
+        self.poly_representation = BinaryPoly([0]) if (self is None or self.power is None) else self.galois.alpha_powers[power]
 
     def __repr__(self):
         return f"Alpha({self.power})"
@@ -30,7 +30,7 @@ class Alpha:
     def get_inverse(self):
         if self.power == 0:
             return Alpha(0)
-        return Alpha(2 ** self.M - 1 - self.power)
+        return Alpha(2 ** self.M - 1 - self.power) if self.power is not None else Alpha(None)
 
     def __add__(self, other):
         alpha1_poly = self.poly_representation

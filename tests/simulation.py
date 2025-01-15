@@ -2,6 +2,7 @@ import copy
 import random
 from pathlib import Path
 
+from alpha import Alpha
 from coder import Coder
 from decoders.decoder import Decoder
 from global_settings import Global
@@ -94,8 +95,12 @@ class Simulation:
             errors_indexes = list(set(errors_indexes))
 
         errors_indexes.sort()
-        print("errors indexes: ", end="")
+        print("Correct errors indexes: ", end="")
         print(errors_indexes)
+
+        error_values = []
+        magnitude_values = []
+
         for index in errors_indexes:
             error_value = random.randint(1, max_error_value)
 
@@ -103,6 +108,12 @@ class Simulation:
                 new_coded_text[index] = error_value
             else:
                 new_coded_text[index] += error_value
+
+            magnitude_values.append((Alpha(coded_text[index]) + Alpha(new_coded_text[index])).power)
+
+
+        print("Correct magnitude values:", magnitude_values, "\n")
+
 
         return new_coded_text
 
