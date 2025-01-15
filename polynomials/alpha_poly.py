@@ -71,7 +71,7 @@ class AlphaPoly(Poly):
         poly1 = p1.get_trimmed().coefficients
         poly2 = p2.get_trimmed().coefficients
 
-        if not any(poly2):
+        if not any(poly2) and 0 not in poly2:
             raise ValueError("Divisor cannot be zero polynomial")
 
         remainder = poly1[:]
