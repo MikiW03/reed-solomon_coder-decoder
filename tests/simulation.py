@@ -22,7 +22,7 @@ def print_header(filepath: str = None, file_mode: str = "a"):
 
 def print_results(no_of_errors: int, tries: int, correct_tries: int, incorrect_tries: int, filepath: str = None,
                   file_mode: str = "a"):
-    row = f"{no_of_errors};{tries};{correct_tries};{incorrect_tries};{round(correct_tries/(correct_tries+incorrect_tries), 2)}"
+    row = f"{no_of_errors};{tries};{correct_tries};{incorrect_tries};{round(correct_tries / (correct_tries + incorrect_tries), 2)}"
     print(row)
 
     if filepath is not None:
@@ -47,8 +47,8 @@ class Simulation:
         self.coded_text = self.coder.code(self.text)[0]
 
     def test_symbol_errors(self, symbol_errors: dict[int, int]):
-        # filepath = f"tests\\{type(self.decoder).__name__}\\symbol_tests_results.txt"
-        # print_header(filepath)
+        filepath = f"tests\\{type(self.decoder).__name__}\\symbol_tests_results.txt"
+        print_header(filepath)
 
         for (no_of_errors, tries) in symbol_errors.items():
             correct = 0
@@ -58,14 +58,14 @@ class Simulation:
                 decoded_message = self.decoder.decode([coded_text_with_errors])[1]
                 correct += 1 if self.coded_text == decoded_message[0] else 0
                 incorrect += 1 if self.coded_text != decoded_message[0] else 0
-                # print("(in progress...)", end=" ")
-                # print_results(no_of_errors, tries, correct, incorrect, filepath=None)
+                print("(in progress...)", end=" ")
+                print_results(no_of_errors, tries, correct, incorrect, filepath=None)
 
-            # print_results(no_of_errors, tries, correct, incorrect, filepath)
+            print_results(no_of_errors, tries, correct, incorrect, filepath)
 
     def test_burst_errors(self, burst_errors: dict[int, int]):
         filepath = f"tests\\{type(self.decoder).__name__}\\burst_tests_results.txt"
-        # print_header(filepath)
+        print_header(filepath)
 
         for (burst_len, tries) in burst_errors.items():
             correct = 0
@@ -95,10 +95,6 @@ class Simulation:
             errors_indexes = list(set(errors_indexes))
 
         errors_indexes.sort()
-        print("Correct errors indexes: ", end="")
-        print(errors_indexes)
-
-        error_values = []
         magnitude_values = []
 
         for index in errors_indexes:
@@ -110,10 +106,6 @@ class Simulation:
                 new_coded_text[index] += error_value
 
             magnitude_values.append((Alpha(coded_text[index]) + Alpha(new_coded_text[index])).power)
-
-
-        print("Correct magnitude values:", magnitude_values, "\n")
-
 
         return new_coded_text
 

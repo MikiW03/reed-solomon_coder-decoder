@@ -27,16 +27,16 @@ class FullDecoder(Decoder):
         # print(print_list_of_alpha_poly(err_locator))
 
         errors_positions = self.find_errors(err_locator)
-        print("Error indexes found: ", end="")
-        print(errors_positions)
+        # print("Error indexes found: ", end="")
+        # print(errors_positions)
 
         error_evaluator = self.find_error_evaluator(syndromes, err_locator)
         # print("Errors evaluator: ", end="")
         # print(print_list_of_alpha_poly(error_evaluator))
 
         error_magnitudes = self.find_error_magnitude(err_locator, errors_positions, error_evaluator)
-        print("\nFound errors magnitudes: ", end="")
-        print(print_list_of_alpha_poly(error_magnitudes))
+        # print("\nFound errors magnitudes: ", end="")
+        # print(print_list_of_alpha_poly(error_magnitudes))
 
         return "", message
 
@@ -83,7 +83,7 @@ class FullDecoder(Decoder):
             err_pos = []
             for i in range(2 ** self.M - 1):
                 if err_loc.replace_x_and_count(Alpha(i)) == Alpha(None):
-                    err_pos.append((i - 1) % (2 ** self.M))
+                    err_pos.append((i - 1) % (2 ** self.M - 1))
 
             err_pos_list.append(err_pos)
 
@@ -92,7 +92,9 @@ class FullDecoder(Decoder):
     def find_error_evaluator(self, syndromes_list, err_locs):
         error_evaluators = []
         for (syndromes, err_loc) in zip(syndromes_list, err_locs):
+            syndromes = AlphaPoly(syndromes.coefficients[::-1])
             error_evaluator = (syndromes * err_loc)
+            error_evaluator %= AlphaPoly([0] + [None] * (len(err_loc.coefficients)))
             error_evaluators.append(error_evaluator)
 
         return error_evaluators
@@ -101,16 +103,14 @@ class FullDecoder(Decoder):
                              error_evaluators: list[AlphaPoly]) -> list[AlphaPoly]:
         magnitudes_list = []
         for (err_loc, err_pos, error_evaluator) in zip(err_locs, err_positions, error_evaluators):
-            # Pochodna formalna lokatora błędów
-
-            test = []
+            derivative = []
             for i, coef in enumerate(err_loc.coefficients):
                 if (len(err_loc.coefficients) - i - 1) % 2 == 1:
-                    test.append(coef)
+                    derivative.append(coef)
                 else:
-                    test.append(None)
+                    derivative.append(None)
 
-            err_loc_derivative = AlphaPoly(test)
+            err_loc_derivative = AlphaPoly(derivative)
 
             err_loc_derivative = err_loc_derivative.get_cyclic_shifted(1, 'right').get_trimmed()
 
